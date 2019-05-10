@@ -103,6 +103,9 @@ public class LispParser {
             l = new List();
             l.value = getObject();
             l.next = list();
+            if(l.value == null && l.next == null){
+                l = null;
+            }
         }
         return l;
     }
