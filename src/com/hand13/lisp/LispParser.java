@@ -13,6 +13,8 @@ public class LispParser {
     private int look;
     private String token;
 
+    private List context= null;
+
     private boolean isParen(String str) {
         return str.equals("(") || str.equals(")");
     }
@@ -21,6 +23,7 @@ public class LispParser {
         this.in = in;
         look = read();
         getToken();
+        context  = new List();
 }
 
     private int read() {
@@ -80,9 +83,9 @@ public class LispParser {
     private Object getObject() {
         Object value = null;
         if(token == null || token.equals(")")) {
-            //
         }else {
             if(token.equals("(")) {
+                getToken();
                 value = list();
             }else {
                 value = token;
@@ -92,22 +95,27 @@ public class LispParser {
         return value;
     }
 
-    public List list(){
-        List l = null;
-        if(token == null) {
+    public List getList() {
+        return (List)this.getObject();
+    }
 
-        }else {
-            if(isParen(token)) {
-                getToken();
+
+    private List list(){
+        List list = null;
+        List current = null;
+        Object value = getObject();
+        while (value != null) {
+            List tmp = new List();
+            tmp.value = value;
+            if(list != null) {
+                current.next = tmp;
+                current = tmp;
+            }else {
+                current = list = tmp;
             }
-            l = new List();
-            l.value = getObject();
-            l.next = list();
-            if(l.value == null && l.next == null){
-                l = null;
-            }
+            value = getObject();
         }
-        return l;
+        return list;
     }
 
 }

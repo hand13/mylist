@@ -8,8 +8,8 @@ import java.io.StringBufferInputStream;
 */
 public class Testing {
     public static void main(String[] args) {
-        LispParser parser = new LispParser(new StringBufferInputStream("(+ 12 (+ 1 2)"));
-        List list = parser.list();
+        LispParser parser = new LispParser(new StringBufferInputStream("(+ 1 (+ 2 3  ) ( + 100 100) )"));
+        List list = parser.getList();
         System.out.println(list);
         System.out.println(Eval.eval(list));
     }

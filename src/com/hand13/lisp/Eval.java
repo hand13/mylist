@@ -1,56 +1,63 @@
 package com.hand13.lisp;
+
 /**
- * @version $Revision$ $Date$
  * @author $Author$
-*/
+ * @version $Revision$ $Date$
+ */
+@SuppressWarnings("ALL")
 public class Eval {
     public static Object eval(Object o) {
-        if(o == null) {
+        if (o == null) {
             return null;
-        }
-        if(o instanceof List) {
-            List list = (List)o;
-            if (list.next == null) {
-                return eval(list.value);
+        } else {
+            if (o instanceof List) {
+                List m = (List) o;
+                if (isOpt( m.value)) {
+                    // 求值list
+                    if (m.value.equals("+")) {
+                        return add(m.next);
+                    }if (m.value.equals("-")) {
+                        return sub(m.next);
+                    }
+                    else {
+                        return m;
+                    }
+                } else {
+                    //非求值list
+                    return m;
+                }
+            } else {
+                //值
+                return Integer.valueOf((String) o);
             }
-            return eval(list.value, list.next);
-        }else {
-            if(o instanceof String) {
-                return derString((String)o);
-            }
-            return o;
         }
     }
 
-    private static Object eval(Object op,List child) {
-        Object result = null;
-        if(op.equals("+")) {
-            result = add(child);
-        }
-        return result;
+    private static boolean isOpt(Object o) {
+        return "+".equals(o) || "-".equals(o) || "*".equals(o) || "/".equals(o);
     }
 
-    private static Object add(List child) {
-        if(child == null ){
-            return 0;
+    private static Integer add(List rest) {
+        Object m = eval(rest);
+        int sum = 0;
+        if (m instanceof Integer) {
+            return (Integer) m;
+        } else if (m instanceof List) {
+            sum += (Integer) eval(((List) m).value);
+            sum += add(((List) m).next);
         }
-        int left = 0;
-        if(child.value != null) {
-           left = (Integer) eval(child.value);
-        }
-
-        int right =  0;
-        if(child.next != null) {
-            List next = child.next;
-            Object result = eval(next);
-            right = (Integer)result;
-        }
-        return right+left;
+        return sum;
     }
 
-    private static Object derString(String str) {
-        // for now
-        return Integer.valueOf(str);
-//        return str;
+    private static Integer sub(List rest) {
+        Object m = eval(rest);
+        int sum = 0;
+        if (m instanceof Integer) {
+            return sum -(Integer) m;
+        } else if (m instanceof List) {
+            sum -= (Integer) eval(((List) m).value);
+            sum -= sub(((List) m).next);
+        }
+        return sum;
     }
 }
